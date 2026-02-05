@@ -1,0 +1,336 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { ArrowUpRight, Github, Linkedin, Mail, MapPin, Sparkles, Code, Music, Camera, Zap, Globe, Cpu } from 'lucide-react';
+
+/* THEME: "NOCTURNAL CREATIVE"
+  - Dark Mode (#050505)
+  - Fonts: Syne (Display) + Space Grotesk (Body)
+  - Grain Texture Overlay
+  - Mouse Spotlight Effect
+  - Infinite Marquee for Skills
+*/
+
+const Portfolio = () => {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [activeProject, setActiveProject] = useState(null);
+
+  // Mouse Follow Effect
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative min-h-screen bg-[#050505] text-white selection:bg-[#7000FF] selection:text-white overflow-x-hidden">
+      
+      {/* --- GLOBAL STYLES & FONTS --- */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap');
+
+        :root {
+          --font-display: 'Syne', sans-serif;
+          --font-body: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+          font-family: var(--font-body);
+        }
+
+        h1, h2, h3, h4, h5, h6, .display-font {
+          font-family: var(--font-display);
+        }
+
+        .stroke-text {
+          -webkit-text-stroke: 1px #333;
+          color: transparent;
+        }
+
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-reverse {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .animate-marquee { animation: marquee 30s linear infinite; }
+        .animate-marquee-reverse { animation: marquee-reverse 30s linear infinite; }
+        
+        .grain {
+          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+          pointer-events: none; z-index: 50;
+          opacity: 0.05;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+      `}</style>
+
+      {/* --- BACKGROUND FX --- */}
+      <div className="grain"></div>
+      <div 
+        className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-500"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(112, 0, 255, 0.08), transparent 40%)`
+        }}
+      />
+
+      {/* --- NAVIGATION --- */}
+      <nav className="fixed top-0 w-full z-40 px-8 py-6 flex justify-between items-center mix-blend-difference text-white">
+        <div className="text-xl font-bold tracking-tighter cursor-pointer display-font" onClick={() => scrollTo('hero')}>
+          HM<span className="text-[#7000FF]">.</span>
+        </div>
+        <div className="flex gap-6 text-sm font-medium tracking-wide">
+          <button onClick={() => scrollTo('work')} className="hover:text-[#7000FF] transition-colors uppercase">Work</button>
+          <button onClick={() => scrollTo('about')} className="hover:text-[#7000FF] transition-colors uppercase">About</button>
+          <a href="mailto:hugo.massing@gmail.com" className="hover:text-[#7000FF] transition-colors uppercase">Contact</a>
+        </div>
+      </nav>
+
+      {/* --- HERO SECTION --- */}
+      <section id="hero" className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 pt-20">
+        <div className="max-w-[95vw]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full border border-white/10 bg-white/5 text-xs font-medium text-gray-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            AVAILABLE FOR FREELANCE
+          </div>
+
+          <h1 className="text-[13vw] leading-[0.8] font-extrabold tracking-tight mix-blend-color-dodge uppercase">
+            HUGO <br />
+            <span className="text-white bg-clip-text bg-gradient-to-r from-gray-600 to-white">MASSING</span>
+          </h1>
+
+          <div className="mt-16 flex flex-col md:flex-row md:items-end justify-between gap-8 border-t border-white/10 pt-8">
+            <p className="text-xl md:text-2xl text-gray-400 max-w-xl leading-relaxed font-light">
+              Frontend Engineer & Creative Developer based in Paris.
+              Turning complex logic into <span className="text-white font-medium">fluid interfaces</span> with React & Next.js.
+            </p>
+            
+            <div className="flex gap-4">
+               <SocialIcon icon={<Github />} href="#" />
+               <SocialIcon icon={<Linkedin />} href="#" />
+               <SocialIcon icon={<Mail />} href="mailto:hugo.massing@gmail.com" />
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Abstract Shape */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 -z-10 opacity-20 blur-[100px]">
+           <div className="w-[500px] h-[500px] bg-[#7000FF] rounded-full animate-pulse"></div>
+        </div>
+      </section>
+
+      {/* --- INFINITE MARQUEE --- */}
+      <div className="py-20 overflow-hidden border-y border-white/5 bg-[#0A0A0A]">
+        <Marquee direction="normal" items={['REACT JS', 'NEXT JS', 'TYPESCRIPT', 'TAILWIND', 'THREE JS', 'NODE JS', 'FRAMER MOTION']} />
+        <div className="h-4"></div>
+        <Marquee direction="reverse" items={['UI DESIGN', 'UX RESEARCH', 'PERFORMANCE', 'ACCESSIBILITY', 'DESIGN SYSTEMS', 'ANIMATION']} />
+      </div>
+
+      {/* --- WORK SECTION --- */}
+      <section id="work" className="py-32 px-6 md:px-12 relative z-10">
+        <div className="flex items-end justify-between mb-20 border-b border-white/10 pb-6">
+          <h2 className="text-6xl md:text-8xl font-bold tracking-tight text-white/90 uppercase">
+            Selected<br/>Work
+          </h2>
+          <span className="text-gray-500 font-mono mb-2 hidden md:block">( 2017 — 2025 )</span>
+        </div>
+
+        <div className="flex flex-col" onMouseLeave={() => setActiveProject(null)}>
+          <ProjectRow 
+            id={1}
+            title="My Job Glasses"
+            role="Dashboard Redesign"
+            year="2025"
+            tags={['React', 'UX Strategy', 'Performance']}
+            setActive={setActiveProject}
+            activeId={activeProject}
+          />
+          <ProjectRow 
+            id={2}
+            title="24h Du Mans (ACO)"
+            role="Ticketing & Interactive Map"
+            year="2023-25"
+            tags={['Leaflet.js', 'Complex State', 'High Traffic']}
+            setActive={setActiveProject}
+            activeId={activeProject}
+          />
+          <ProjectRow 
+            id={3}
+            title="Sonio"
+            role="SaaS Back-office"
+            year="2024"
+            tags={['TypeScript', 'Mentorship', 'Architecture']}
+            setActive={setActiveProject}
+            activeId={activeProject}
+          />
+          <ProjectRow 
+            id={4}
+            title="EasyMovie"
+            role="Cloud Video Editor"
+            year="2019-23"
+            tags={['MediaRecorder', 'Web Audio', 'Micro-frontends']}
+            setActive={setActiveProject}
+            activeId={activeProject}
+          />
+           <ProjectRow 
+            id={5}
+            title="Vertical Station"
+            role="Analytics Dashboard"
+            year="2018"
+            tags={['Data Viz', 'React', 'Internal Tools']}
+            setActive={setActiveProject}
+            activeId={activeProject}
+          />
+        </div>
+      </section>
+
+      {/* --- ABOUT / GRID SECTION --- */}
+      <section id="about" className="py-32 px-6 md:px-12 bg-[#080808]">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-7xl mx-auto">
+          
+          {/* Main Bio */}
+          <div className="md:col-span-8 bg-[#111] p-10 rounded-3xl border border-white/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-32 bg-purple-600 blur-[120px] opacity-20 group-hover:opacity-30 transition-opacity"></div>
+            <h3 className="text-3xl font-bold mb-6 display-font">More than just code.</h3>
+            <p className="text-gray-400 text-lg leading-relaxed mb-6">
+              I’m a 33-year-old developer obsessed with the intersection of <span className="text-white">design and engineering</span>. 
+              With a background from <span className="text-white">École 42</span>, I approach problems with a hacker mindset—always looking for the most efficient, elegant solution.
+            </p>
+            <p className="text-gray-400 text-lg leading-relaxed">
+              When I'm not shipping code, I'm deeply involved in urban culture, producing music, or skating through the streets of Paris/Tours.
+            </p>
+            <div className="mt-8 flex gap-4">
+              <Badge icon={<Cpu size={14}/>} text="Ecole 42 (2013)" />
+              <Badge icon={<Globe size={14}/>} text="Bilingual (FR/EN)" />
+            </div>
+          </div>
+
+          {/* Stats / Stack */}
+          <div className="md:col-span-4 grid grid-rows-2 gap-6">
+             <div className="bg-[#111] p-8 rounded-3xl border border-white/5 flex flex-col justify-center items-center text-center hover:border-purple-500/30 transition-colors">
+                <div className="text-5xl font-bold text-white mb-2 display-font">10+</div>
+                <div className="text-sm text-gray-500 uppercase tracking-widest">Years Experience</div>
+             </div>
+             <div className="bg-[#111] p-8 rounded-3xl border border-white/5 flex flex-col justify-center items-center text-center hover:border-purple-500/30 transition-colors">
+                <div className="text-5xl font-bold text-white mb-2 display-font">30+</div>
+                <div className="text-sm text-gray-500 uppercase tracking-widest">Projects Shipped</div>
+             </div>
+          </div>
+
+          {/* Hobbies */}
+          <div className="md:col-span-12 grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+             <HobbyCard title="Music Prod" icon={<Music />} color="bg-pink-500" />
+             <HobbyCard title="Photography" icon={<Camera />} color="bg-blue-500" />
+             <HobbyCard title="New Tech" icon={<Zap />} color="bg-yellow-500" />
+             <HobbyCard title="Skateboard" icon={<ArrowUpRight />} color="bg-green-500" />
+          </div>
+        </div>
+      </section>
+
+      {/* --- FOOTER --- */}
+      <footer className="py-32 px-6 md:px-12 flex flex-col items-center justify-center text-center border-t border-white/5 bg-gradient-to-b from-[#050505] to-[#111]">
+        <h2 className="text-[5vw] font-bold tracking-tighter mb-8 leading-none display-font">
+          HAVE AN IDEA?
+        </h2>
+        
+        <a 
+          href="mailto:hugo.massing@gmail.com" 
+          className="group relative inline-flex items-center gap-4 bg-white text-black px-10 py-5 rounded-full text-xl font-bold hover:scale-105 transition-transform duration-300"
+        >
+          <span className="display-font">Start a Conversation</span>
+          <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:rotate-45 transition-transform">
+             <ArrowUpRight size={18} />
+          </div>
+        </a>
+
+        <div className="mt-24 flex flex-col md:flex-row justify-between items-center w-full max-w-7xl text-xs text-gray-500 uppercase tracking-widest border-t border-white/5 pt-8">
+          <p>© 2025 HUGO MASSING</p>
+          <div className="flex gap-8 mt-4 md:mt-0">
+            <span>Github</span>
+            <span>LinkedIn</span>
+            <span>Twitter</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+/* --- SUBCOMPONENTS --- */
+
+const ProjectRow = ({ id, title, role, year, tags, setActive, activeId }) => {
+  const isHovered = activeId === id;
+  const isDimmed = activeId !== null && activeId !== id;
+
+  return (
+    <div 
+      className={`group relative py-12 border-t border-white/10 transition-all duration-500 cursor-pointer flex flex-col md:flex-row md:items-baseline justify-between gap-4 ${isDimmed ? 'opacity-20 blur-[1px]' : 'opacity-100'}`}
+      onMouseEnter={() => setActive(id)}
+    >
+      <div className="flex flex-col relative z-10">
+        <h3 className="text-4xl md:text-6xl font-extrabold text-white group-hover:text-[#7000FF] transition-colors duration-300 display-font uppercase">
+          {title}
+        </h3>
+        <span className="text-lg text-gray-400 mt-2 font-light tracking-wide">{role}</span>
+      </div>
+
+      <div className="flex flex-col items-end gap-2 relative z-10">
+        <span className="text-xl font-mono text-gray-500">{year}</span>
+        <div className="flex gap-2">
+          {tags.map((tag, i) => (
+             <span key={i} className="text-xs px-2 py-1 rounded border border-white/10 bg-white/5 text-gray-400 font-mono">
+               {tag}
+             </span>
+          ))}
+        </div>
+      </div>
+      
+      {/* Hover Gradient Background specific to row */}
+      <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
+    </div>
+  );
+};
+
+const Marquee = ({ items, direction = 'normal' }) => (
+  <div className="flex overflow-hidden w-full whitespace-nowrap mb-4 select-none opacity-50 hover:opacity-100 transition-opacity">
+    <div className={`flex gap-8 items-center ${direction === 'reverse' ? 'animate-marquee-reverse' : 'animate-marquee'}`}>
+      {[...items, ...items, ...items, ...items].map((item, i) => (
+        <React.Fragment key={i}>
+          <span className="text-6xl md:text-8xl font-black text-transparent stroke-text display-font">
+            {item}
+          </span>
+          <span className="text-2xl text-[#7000FF]">✦</span>
+        </React.Fragment>
+      ))}
+    </div>
+  </div>
+);
+
+const HobbyCard = ({ title, icon, color }) => (
+  <div className="bg-[#111] p-6 rounded-2xl border border-white/5 hover:-translate-y-2 transition-transform duration-300 group">
+    <div className={`w-10 h-10 ${color} rounded-full flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(255,255,255,0.3)]`}>
+      {icon}
+    </div>
+    <div className="font-bold text-lg display-font uppercase">{title}</div>
+  </div>
+);
+
+const SocialIcon = ({ icon, href }) => (
+  <a href={href} className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all duration-300">
+    {icon}
+  </a>
+);
+
+const Badge = ({ icon, text }) => (
+  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium text-gray-300">
+    {icon}
+    <span>{text}</span>
+  </div>
+);
+
+export default Portfolio;
